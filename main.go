@@ -30,5 +30,5 @@ func debug() {
 }
 
 func main() {
-
+	fmt.Println("hello world")
 }
