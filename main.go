@@ -29,6 +29,14 @@ func debug() {
 	scanner = bufio.NewScanner(inputFile)
 }
 
+func scan() string {
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Scanner eror: %q\n", err)
+	}
+	return scanner.Text()
+}
+
 func main() {
-	fmt.Println("hello world")
+
 }

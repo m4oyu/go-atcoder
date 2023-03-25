@@ -3,11 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
+	"unicode/utf8"
 )
 
 var scanner = bufio.NewScanner(os.Stdin)
+var reader = bufio.NewReaderSize(os.Stdin, 4*1024)
 
 func init() {
 	if len(os.Args) >= 2 {
@@ -21,54 +24,68 @@ func init() {
 }
 
 func debug() {
-	inputFile, err := os.Open("./problem.in")
+	input, err := os.Open("./problem.in")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "There is no inputFile.")
+		fmt.Fprintln(os.Stderr, "There is no input.")
 		os.Exit(1)
 	}
 
-	scanner = bufio.NewScanner(inputFile)
+	scanner = bufio.NewScanner(input)
+	reader = bufio.NewReader(input)
+	defer input.Close()
+}
+
+func scan() string {
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Scanner error: %q\n", err)
+	}
+	return scanner.Text()
+}
+
+func readLine() string {
+	buf := make([]byte, 0, 1000000)
+	for {
+		l, p, e := reader.ReadLine()
+		if e == io.EOF {
+			break
+		}
+		if e != nil {
+			panic(e)
+		}
+		buf = append(buf, l...)
+		if !p {
+			break
+		}
+	}
+	return string(buf)
 }
 
 func main() {
 	var n int
 	var s string
-	scanner.Scan()
-	n, _ = strconv.Atoi(scanner.Text())
-	scanner.Scan()
-	s = scanner.Text()
+	n, _ = strconv.Atoi(scan())
+	s = readLine()
 
-	o := make([]int, n)
-	idx_o := 0
-	x := make([]int, n)
-	idx_x := 0
-	for i, v := range s {
-		if v == 'o' {
-			o[idx_o] = i
-			idx_o++
-		}
-		if v == 'x' {
-			x[idx_x] = i
-			idx_x++
+	var a []int
+	tmp, _ := utf8.DecodeRuneInString(s[0:])
+	count := 0
+	for _, v := range s {
+		if tmp == v {
+			count++
+		} else {
+			a = append(a, count)
+			tmp = v
+			count = 1
 		}
 	}
+	a = append(a, count)
 
-	if idx_o == 0 || idx_x == 0 {
-		fmt.Println(0)
-		return
+	var extra int = 0
+	for _, v := range a {
+		extra += v * (v + 1) / 2
 	}
 
-	for i, v := range s {
-		// if v == 'o' {
-
-		// }
-		if v == 'x' {
-			x[idx_x] = i
-			idx_x++
-		}
-	}
-
-	// o, x を配列で管理
-	// o[0] = N : 1つ目の o は左からN文字目
+	fmt.Println((n * (n + 1) / 2) - extra)
 
 }
