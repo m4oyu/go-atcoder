@@ -3,14 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
-	"unicode/utf8"
 )
 
-var scanner = bufio.NewScanner(os.Stdin)
-var reader = bufio.NewReaderSize(os.Stdin, 4*1024)
+var reader = bufio.NewReaderSize(os.Stdin, 1000000)
 
 func init() {
 	if len(os.Args) >= 2 {
@@ -18,9 +15,6 @@ func init() {
 			debug()
 		}
 	}
-	const buf = 200100
-	scanner.Split(bufio.ScanWords)
-	scanner.Buffer(make([]byte, buf), buf)
 }
 
 func debug() {
@@ -29,29 +23,16 @@ func debug() {
 		fmt.Fprintln(os.Stderr, "There is no input.")
 		os.Exit(1)
 	}
-
-	scanner = bufio.NewScanner(input)
 	reader = bufio.NewReader(input)
-	defer input.Close()
-}
-
-func scan() string {
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		fmt.Printf("Scanner error: %q\n", err)
-	}
-	return scanner.Text()
 }
 
 func readLine() string {
 	buf := make([]byte, 0, 1000000)
 	for {
-		l, p, e := reader.ReadLine()
-		if e == io.EOF {
-			break
-		}
-		if e != nil {
-			panic(e)
+		l, p, err := reader.ReadLine()
+		if err != nil {
+			fmt.Println(err)
+			panic(err)
 		}
 		buf = append(buf, l...)
 		if !p {
@@ -61,31 +42,31 @@ func readLine() string {
 	return string(buf)
 }
 
-func main() {
-	var n int
-	var s string
-	n, _ = strconv.Atoi(scan())
-	s = readLine()
+func readint() int {
+	ret, err := strconv.Atoi(readLine())
+	if err != nil {
+		fmt.Println(err)
+	}
+	return ret
+}
 
-	var a []int
-	tmp, _ := utf8.DecodeRuneInString(s[0:])
-	count := 0
-	for _, v := range s {
-		if tmp == v {
-			count++
+func main() {
+	n := readint()
+	s := readLine()
+
+	co := -1
+	cx := -1
+	ans := 0
+
+	for i := 0; i < n; i++ {
+		if s[i] == 'o' {
+			ans += cx + 1
+			co = i
 		} else {
-			a = append(a, count)
-			tmp = v
-			count = 1
+			ans += co + 1
+			cx = i
 		}
 	}
-	a = append(a, count)
 
-	var extra int = 0
-	for _, v := range a {
-		extra += v * (v + 1) / 2
-	}
-
-	fmt.Println((n * (n + 1) / 2) - extra)
-
+	fmt.Println(ans)
 }
