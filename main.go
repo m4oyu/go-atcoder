@@ -1,3 +1,5 @@
+//lint:file-ignore U1000 Ignore all unused code, it's generated
+
 package main
 
 import (
@@ -5,9 +7,11 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var reader = bufio.NewReaderSize(os.Stdin, 1000000)
+var maxInt = 9223372036854775807
 
 func init() {
 	if len(os.Args) >= 2 {
@@ -42,7 +46,7 @@ func readLine() string {
 	return string(buf)
 }
 
-func readint() int {
+func readInt() int {
 	ret, err := strconv.Atoi(readLine())
 	if err != nil {
 		fmt.Println(err)
@@ -50,23 +54,34 @@ func readint() int {
 	return ret
 }
 
-func main() {
-	n := readint()
-	s := readLine()
-
-	co := -1
-	cx := -1
-	ans := 0
-
-	for i := 0; i < n; i++ {
-		if s[i] == 'o' {
-			ans += cx + 1
-			co = i
-		} else {
-			ans += co + 1
-			cx = i
+func readIntArray() []int {
+	ret := make([]int, 0)
+	tmp := strings.Split(readLine(), " ")
+	for _, s := range tmp {
+		i, err := strconv.Atoi(s)
+		if err != nil {
+			fmt.Println(err)
 		}
+		ret = append(ret, i)
 	}
+	return ret
+}
 
-	fmt.Println(ans)
+func max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func main() {
 }
