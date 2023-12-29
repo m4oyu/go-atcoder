@@ -3,8 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
+	"sort"
+	"strconv"
 )
 
 var sc = bufio.NewScanner(os.Stdin)
@@ -31,16 +32,46 @@ func debug() {
 
 func main() {
 	sc.Scan()
-	s := sc.Text()
+	n, _ := strconv.Atoi(sc.Text())
 	sc.Scan()
-	t := sc.Text()
+	q, _ := strconv.Atoi(sc.Text())
 
-	diffs := math.Abs(float64(int(s[0]) - int(s[1])))
-	difft := math.Abs(float64(int(t[0]) - int(t[1])))
-
-	if ((diffs == 1 || diffs == 4) && (difft == 1 || difft == 4)) || (diffs == 2 && difft == 2) {
-		fmt.Println("Yes")
-		return
+	r := make([]int, n)
+	for i := 0; i < n; i++ {
+		sc.Scan()
+		r[i], _ = strconv.Atoi(sc.Text())
 	}
-	fmt.Println("No")
+
+	sort.Slice(r, func(i, j int) bool {
+		return r[i] < r[j]
+	})
+
+	sum := make([]int, n)
+	sum[0] = r[0]
+	for i := 1; i < n; i++ {
+		sum[i] = sum[i-1] + r[i]
+	}
+
+	for i := 0; i < q; i++ {
+		sc.Scan()
+		query, _ := strconv.Atoi(sc.Text())
+
+		left := -1
+		right := n
+		middle := (right + left) / 2
+
+		for right-left > 1 {
+			if sum[middle] < query {
+				left = middle
+			} else if sum[middle] == query {
+				left = middle
+				right = middle + 1
+			} else {
+				right = middle
+			}
+			middle = left + ((right - left + 1) / 2)
+		}
+		fmt.Println(left + 1)
+	}
+
 }
