@@ -38,7 +38,7 @@ func main() {
 	diffs := math.Abs(float64(int(s[0]) - int(s[1])))
 	difft := math.Abs(float64(int(t[0]) - int(t[1])))
 
-	if ((diffs == 1 || diffs == 4) && (difft == 1 || difft == 4)) || (diffs == 2 && difft == 2) {
+	if ((diffs == 1 || diffs == 4) && (difft == 1 || difft == 4)) || ((diffs == 2 || diffs == 3) && (difft == 3 || difft == 2)) {
 		fmt.Println("Yes")
 		return
 	}
